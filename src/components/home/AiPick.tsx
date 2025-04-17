@@ -7,8 +7,7 @@ import CustomText from '../ui/CustomText'
 
 const AiPick = () => {
 
-    const { user } = usePlayerStore();
-    // console.log('User:', user?.id);
+    const { currentPlayingPodcast, setCurrentPlayingPodcast, resetPlayer, user } = usePlayerStore();
     const [fetching, setFetching] = useState(false)
 
     const [fetchAI, { data, loading, error }] = useLazyQuery(AI_PICK, {
@@ -22,20 +21,28 @@ const AiPick = () => {
             const res = await fetchAI();
             console.log(res?.data)
         } catch (err) {
-            console.error(`AI Fetch Error: ${err}`)
+            console.error("AI Fetch Error:", JSON.stringify(err, null, 2));
+            console.error("GraphQL Error:", error?.message || error);
         }
         setFetching(false)
     };
 
-    const aiPodcast = data?.getRecommendedPodcasts?.[0];
+    const aiPodcast = data?.getRecommendedPodcasts?.[1];
+
+    // const recommendations = data?.getRecommendedPodcasts || [];
+    // const aiPodcast = recommendations.length
+    //     ? recommendations[Math.floor(Math.random() * recommendations.length)]
+    //     : null;
 
 
-    // console.log('User ID:', user?.id);
-    // console.log('Raw data:', data);
-    // console.log('Recommended array:', data?.getRecommendedPodcasts);
-    // console.log('AI Podcast:', aiPodcast);
-    // console.log('Error:', error);
-
+    const togglePlayPodcast = async (item: any) => {
+        if (currentPlayingPodcast?.id === item.id) {
+            resetPlayer();
+        } else {
+            resetPlayer();
+            setCurrentPlayingPodcast(item);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -58,7 +65,7 @@ const AiPick = () => {
                     ) : <TouchableOpacity
                         onPress={() => {
                             if (aiPodcast?.artwork) {
-
+                                togglePlayPodcast(aiPodcast);
                             } else {
                                 handleFetchAI();
                             }

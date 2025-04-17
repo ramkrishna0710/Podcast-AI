@@ -9,7 +9,7 @@ interface CustomStatusBarProps extends Partial<StatusBarProps> {
 
 const CustomStatusBar: React.FC<CustomStatusBarProps> = ({
   hidden = false,
-  barStyle = 'dark-content',
+  barStyle = 'light-content',
   backgroundColor,
   ...rest
 }) => {
